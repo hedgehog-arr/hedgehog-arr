@@ -1,0 +1,9 @@
+function-arrows: leading
+haddock-style: single-line
+indentation: 2
+single-constraint-parens: never
+single-deriving-parens: never
+sort-constraints: true
+sort-derived-classes: true
+sort-deriving-clauses: true
+unicode: detect
