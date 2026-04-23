@@ -19,10 +19,10 @@ common default
 
   build-depends:
     arrows >=0.4 && <0.5,
-    base >=4.18 && <4.19,
-    bytestring >=0.11 && <0.12,
+    base >=4.18 && <4.21,
+    bytestring >=0.11 && <0.13,
     containers >=0.6 && <0.7,
-    deepseq >=1.4 && <1.5,
+    deepseq >=1.4 && <1.6,
     hedgehog >=1.7 && <1.8,
     mtl >=2.3 && <2.4,
     text >=2.1 && <2.2,
