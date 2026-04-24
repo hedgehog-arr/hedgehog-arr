@@ -52,7 +52,7 @@ prop_discard_limit =
 prop_shrink_limit :: Property
 prop_shrink_limit =
   withShrinks 0 . property $ do
-    x <- forAll Gen.enum ('a', 'z')
+    x <- forAll Gen.enum ('a', 'z') -- Fully Expressible
     assert $
       x == 'z'
 
@@ -63,9 +63,9 @@ prop_shrink_limit =
 prop_foo :: Property
 prop_foo =
   property $ do
-    x <- forAll Gen.enum ('a', 'z')
+    x <- forAll Gen.enum ('a', 'z') -- Fully Expressible
     y <-
-      forAll
+      forAll -- Semi Expressible
         ( Gen.choice
             [ Gen.integral
             , Gen.integral
@@ -118,19 +118,19 @@ total :: Order -> USD
 total (Order xs) =
   sum $ fmap price xs
 
-cheap :: Gen a Item
+cheap :: Gen a Item -- Fully Expressible
 cheap =
   Item
     <$> (Product <$> Gen.element $$ ["sandwich", "noodles"])
     <*> (USD <$> Gen.integral $$ Range.constant 5 10)
 
-expensive :: Gen a Item
+expensive :: Gen a Item -- Fully Expressible
 expensive =
   Item
     <$> (Product <$> Gen.element $$ ["oculus", "vive"])
     <*> (USD <$> Gen.integral $$ Range.linear 1000 2000)
 
-order :: Gen a Item -> Gen a Order
+order :: Gen a Item -> Gen a Order -- Fully Expressible
 order gen =
   Order <$> Gen.list gen $< Range.linear 0 50
 
@@ -154,8 +154,8 @@ order gen =
 prop_total :: Property
 prop_total =
   property $ do
-    x <- forAll (order $ Gen.choice [cheap, expensive]) ()
-    y <- forAll (order expensive) ()
+    x <- forAll (order $ Gen.choice [cheap, expensive]) () -- Fully Expressible
+    y <- forAll (order expensive) () -- Fully Expressible
     total (merge x y) === total x + total y
 
 ------------------------------------------------------------------------
@@ -181,7 +181,7 @@ evalExp = \case
 -- sub-terms:
 --
 
-genExp1 :: Gen a Exp
+genExp1 :: Gen a Exp -- Semi Expressible
 genExp1 =
   Gen.recursive
     Gen.choice
@@ -193,7 +193,7 @@ genExp1 =
 prop_hutton_1 :: Property
 prop_hutton_1 =
   property $ do
-    x <- forAll genExp1 ()
+    x <- forAll genExp1 () -- Semi Expressible
     case x of
       Add (Add _ _) _ ->
         assert (evalExp x < 100)
@@ -213,7 +213,7 @@ shrinkExp2 = \case
   Add x y ->
     [Lit (evalExp (Add x y))]
 
-genExp2 :: Gen a Exp
+genExp2 :: Gen a Exp  -- Semi Expressible
 genExp2 =
   Gen.shrink
     ( Gen.recursive
@@ -228,7 +228,7 @@ genExp2 =
 prop_hutton_2 :: Property
 prop_hutton_2 =
   property $ do
-    x <- forAll genExp2 ()
+    x <- forAll genExp2 () -- Semi Expressible
     case x of
       Add (Add _ _) _ ->
         assert (evalExp x < 100)
@@ -247,7 +247,7 @@ data SomeRecord
   }
   deriving (Eq, Show)
 
-genRecord :: Gen a SomeRecord
+genRecord :: Gen a SomeRecord -- Fully Expressible
 genRecord =
   SomeRecord
     <$> Gen.int $$ Range.linearFrom 0 (-1000) 1000
@@ -263,14 +263,14 @@ genRecord =
 prop_record :: Property
 prop_record =
   property $ do
-    x <- forAll genRecord ()
-    y <- forAll genRecord ()
+    x <- forAll genRecord () -- Fully Expressible
+    y <- forAll genRecord () -- Fully Expressible
     diff x (==) y
 
 prop_different_record :: Property
 prop_different_record =
   property $ do
-    x <- forAll genRecord ()
+    x <- forAll genRecord () -- Fully Expressible
     x /== x
 
 ------------------------------------------------------------------------
@@ -279,8 +279,8 @@ prop_different_record =
 prop_takeEnd :: Property
 prop_takeEnd =
   property $ do
-    xs <- forAll (Gen.string Gen.unicode) (Range.linear 0 100, ())
-    n <- forAll Gen.int (Range.linear 0 100)
+    xs <- forAll (Gen.string Gen.unicode) (Range.linear 0 100, ()) -- Fully Expressible
+    n <- forAll Gen.int (Range.linear 0 100) -- Fully Expressible
 
     let
       string =

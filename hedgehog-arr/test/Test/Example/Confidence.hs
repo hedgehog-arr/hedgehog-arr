@@ -17,7 +17,7 @@ import qualified Hedgehog.Arrow.Gen as Gen
 prop_without_confidence :: Property
 prop_without_confidence =
   verifiedTermination . withConfidence (10^9) . withTests 1000000 . property $ do
-    number <- forAll Gen.int (Range.constant 1 2)
+    number <- forAll Gen.int (Range.constant 1 2) -- Fully Expressible
     cover 60 "number == 1" $ number == 1
 
 ------------------------------------------------------------------------

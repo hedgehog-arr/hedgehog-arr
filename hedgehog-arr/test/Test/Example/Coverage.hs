@@ -16,7 +16,7 @@ import qualified Hedgehog.Range as Range
 prop_label :: Property
 prop_label =
   withTests 101 . property $ do
-    match <- forAll Gen.bool ()
+    match <- forAll Gen.bool () -- Fully Expressible
     evalIO $ threadDelay 10000
     if match then
       label "True"
@@ -31,7 +31,7 @@ data Bucket =
 prop_occupy :: Property
 prop_occupy =
   property $ do
-    size <- forAll Gen.getSize ()
+    size <- forAll Gen.getSize () -- Fully Expressible
     if size == 1 then
       label "wall st"
     else
@@ -41,7 +41,7 @@ prop_occupy =
 prop_world_cup_titles_2018 :: Property
 prop_world_cup_titles_2018 =
   withTests 5 . property $ do
-    size <- forAll Gen.getSize ()
+    size <- forAll Gen.getSize () -- Fully Expressible
     flip classify (size < 5) "brazil"
     flip classify (size < 4) "italy"
     flip classify (size < 4) "germany"
@@ -56,21 +56,21 @@ prop_world_cup_titles_2018 =
 prop_collect :: Property
 prop_collect =
   withTests 101 . property $ do
-    x <- forAll (arr Bucket <<< Gen.int) (Range.linear 1 9)
+    x <- forAll (arr Bucket <<< Gen.int) (Range.linear 1 9) -- Fully Expressible
     evalIO $ threadDelay 10000
     collect x
 
 prop_classify :: Property
 prop_classify =
   withTests 100 . property $ do
-    a <- forAll Gen.int (Range.constant 0 100)
+    a <- forAll Gen.int (Range.constant 0 100) -- Fully Expressible
     classify "small number" $ a < 50
     classify "big number" $ a >= 50
 
 prop_cover_number :: Property
 prop_cover_number =
   withTests 101 . property $ do
-    number <- forAll Gen.int (Range.linear 1 100)
+    number <- forAll Gen.int (Range.linear 1 100) -- Fully Expressible
     evalIO $ threadDelay 20000
     cover 50 "small number" $ number < 10
     cover 15 "medium number" $ number >= 20
@@ -80,7 +80,7 @@ prop_cover_number =
 prop_cover_bool :: Property
 prop_cover_bool =
   withTests 101 . property $ do
-    match <- forAll Gen.bool ()
+    match <- forAll Gen.bool () -- Fully Expressible
     cover 30 "True" match
     cover 30 "False" $ not match
 

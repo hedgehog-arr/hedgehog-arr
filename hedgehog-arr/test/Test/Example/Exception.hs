@@ -27,20 +27,20 @@ maximum (x : xs) = x `max` maximum xs
 prop_equals :: Property
 prop_equals =
   property $ do
-    xs <- forAll (Gen.list Gen.int) (Range.linear 1 100, Range.constantBounded)
+    xs <- forAll (Gen.list Gen.int) (Range.linear 1 100, Range.constantBounded) -- Fully Expressible
     maximum xs === List.maximum xs
 
 prop_assert :: Property
 prop_assert =
   property $ do
-    xs <- forAll (Gen.list Gen.int) (Range.linear 1 100, Range.constantBounded)
+    xs <- forAll (Gen.list Gen.int) (Range.linear 1 100, Range.constantBounded) -- Fully Expressible
     assert $
       filter (== 0) xs == []
 
 prop_property_exception :: Property
 prop_property_exception =
   property $ do
-    _xs <- forAll (Gen.list Gen.int) (Range.linear 1 100, Range.constantBounded)
+    _xs <- forAll (Gen.list Gen.int) (Range.linear 1 100, Range.constantBounded) -- Fully Expressible
     _ <- error "got an error"
     assert True
 

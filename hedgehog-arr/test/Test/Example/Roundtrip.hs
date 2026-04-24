@@ -124,7 +124,7 @@ parse =
 
 genTokens :: Gen a [Token]
 genTokens =
-  Gen.list genToken $< Range.linear 0 100
+  Gen.list genToken $< Range.linear 0 100 -- Semi Expressible
 
 round6 :: Double -> Double
 round6 x =
@@ -132,7 +132,7 @@ round6 x =
 
 genToken :: Gen a Token
 genToken =
-  Gen.choice [
+  Gen.choice [ -- Semi Expressible
       TInt <$> Gen.int $$ Range.linear 0 maxBound
     , TFloat . round6 <$> Gen.double $$ Range.exponentialFloat 0.0 9223372036854775807.9
     , pure TAssign
@@ -148,7 +148,7 @@ genToken =
 prop_trip :: Property
 prop_trip =
   withTests 1000 . property $ do
-    toks <- forAll genTokens ()
+    toks <- forAll genTokens () -- Semi Expressible
     tripping toks pretty parse
 
 tests :: IO Bool

@@ -28,14 +28,14 @@ data SomeData =
     , someFoo2 :: Foo
     } deriving (Eq, Ord, Show)
 
-genFoo :: Gen a Foo
+genFoo :: Gen a Foo -- Fully Expressible
 genFoo =
   Foo <$> Gen.element $$ ["kick", "flip", "flap"]
 
 prop_foo :: Property
 prop_foo =
   property $ do
-    x <- forAll (SomeData <$> genFoo <*> genFoo) ()
+    x <- forAll (SomeData <$> genFoo <*> genFoo) () -- Fully Expressible
     x === SomeData (Foo "quasi") (Foo "quoted")
 --  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 --  │ ━━━ Failed (- lhs) (+ rhs) ━━━

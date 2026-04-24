@@ -156,7 +156,7 @@ typecheck' env expr =
 
 ------------------------------------------------------------------------
 
-genType :: ArrowGen m => m a Type
+genType :: ArrowGen m => m a Type -- Semi Expressible
 genType =
   Gen.recursive
     Gen.choice
@@ -169,10 +169,10 @@ genType =
 
 ------------------------------------------------------------------------
 
-genWellTypedExpr :: Gen Type Expr
+genWellTypedExpr :: Gen Type Expr -- Semi Expressible
 genWellTypedExpr = runReader genWellTypedExpr' <<< arr (,mempty)
 
-genWellTypedExpr' :: ReaderArrow (Map Type [Expr]) Gen Type Expr
+genWellTypedExpr' :: ReaderArrow (Map Type [Expr]) Gen Type Expr -- Semi Expressible
 genWellTypedExpr' =
   Gen.shrink
     ( Gen.recursive
@@ -194,7 +194,7 @@ shrinkExpr expr =
     _ ->
       []
 
-genWellTypedExpr'' :: ReaderArrow (Map Type [Expr]) Gen Type Expr
+genWellTypedExpr'' :: ReaderArrow (Map Type [Expr]) Gen Type Expr -- Semi Expressible
 genWellTypedExpr'' = proc want -> do
   case want of
     TBool ->
@@ -214,7 +214,7 @@ insertVar n typ =
   Map.insertWith (<>) typ [EVar n]
     . fmap (filter (/= EVar n))
 
-genWellTypedApp :: ReaderArrow (Map Type [Expr]) Gen Type Expr
+genWellTypedApp :: ReaderArrow (Map Type [Expr]) Gen Type Expr -- Semi Expressible
 genWellTypedApp = proc want -> do
   tg <- genKnownTypeMaybe -< ()
   eg <- genWellTypedExpr' -< tg
@@ -224,7 +224,7 @@ genWellTypedApp = proc want -> do
 
 -- | This tries to look up a known expression of the desired type from the env.
 -- It does not always succeed, throwing `empty` when unavailable.
-genWellTypedPath :: ReaderArrow (Map Type [Expr]) Gen Type Expr
+genWellTypedPath :: ReaderArrow (Map Type [Expr]) Gen Type Expr -- Fully Expressible
 genWellTypedPath = proc want -> do
   paths <- readState -< ()
   case fromMaybe [] (Map.lookup want paths) of
@@ -233,7 +233,7 @@ genWellTypedPath = proc want -> do
     es ->
       Gen.element -< es
 
-genKnownTypeMaybe :: ReaderArrow (Map Type [Expr]) Gen a Type
+genKnownTypeMaybe :: ReaderArrow (Map Type [Expr]) Gen a Type -- Semi Expressible
 genKnownTypeMaybe = proc _ -> do
   known <- readState -< ()
   if Map.null known
@@ -245,7 +245,7 @@ genKnownTypeMaybe = proc _ -> do
 ------------------------------------------------------------------------
 
 -- Generates a term that is ill-typed at some point.
-genIllTypedExpr :: Gen a Expr
+genIllTypedExpr :: Gen a Expr -- Semi Expressible
 genIllTypedExpr = proc _ -> do
   be <- genIllTypedApp -< ()
   Gen.recursive
@@ -263,7 +263,7 @@ genIllTypedExpr = proc _ -> do
     ] -< be
 
 -- Generates a term that is ill-typed at the very top.
-genIllTypedApp :: Gen a Expr
+genIllTypedApp :: Gen a Expr -- Semi Expressible
 genIllTypedApp = proc _ -> do
   t1 <- genType -< ()
   t2 <- genType -< ()
@@ -279,29 +279,29 @@ genIllTypedApp = proc _ -> do
 prop_welltyped :: Property
 prop_welltyped =
   property $ do
-    ty <- forAll genType ()
-    ex <- forAll genWellTypedExpr ty
+    ty <- forAll genType () -- Semi Expressible
+    ex <- forAll genWellTypedExpr ty -- Semi Expressible
     typecheck ex === pure ty
 
 prop_illtyped :: Property
 prop_illtyped =
   property $ do
-    ex <- forAll genIllTypedExpr ()
+    ex <- forAll genIllTypedExpr () -- Semi Expressible
     _t <- evalEither (typecheck ex)
     success
 
 prop_consistent :: Property
 prop_consistent =
   property $ do
-    ty <- forAll genType ()
-    ex <- forAll genWellTypedExpr ty
+    ty <- forAll genType () -- Semi Expressible
+    ex <- forAll genWellTypedExpr ty -- Semi Expressible
     typecheck (evaluate ex) === pure ty
 
 prop_idempotent :: Property
 prop_idempotent =
   property $ do
-    ty <- forAll genType ()
-    ex <- forAll genWellTypedExpr ty
+    ty <- forAll genType () -- Semi Expressible
+    ex <- forAll genWellTypedExpr ty -- Semi Expressible
     evaluate (evaluate ex) === evaluate ex
 
 ------------------------------------------------------------------------

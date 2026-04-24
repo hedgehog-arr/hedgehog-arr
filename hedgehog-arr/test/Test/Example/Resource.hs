@@ -49,7 +49,7 @@ unixSort input output = do
 prop_unix_sort :: Property
 prop_unix_sort =
   property . hoist runResourceT $ do
-    values0 <- forAll
+    values0 <- forAll -- Fully Expressible
       (Gen.list (Gen.string Gen.alpha))
       (Range.linear 0 100, (Range.constant 1 5, ()))
 
@@ -102,7 +102,7 @@ prop_logged_unix_sort ref =
   property . hoist (bracketLog ref 0 "runResourceT") . hoist runResourceT $ do
     normalLog ref 2 "forAll:before"
 
-    values0 <- forAll
+    values0 <- forAll -- Fully Expressible
       (Gen.list (Gen.string Gen.alpha))
       (Range.constant 1 2, (Range.constant 1 2, ()))
 
@@ -131,7 +131,7 @@ prop_logged_unix_sort_bracket ref =
     (normalLog ref 0 "b:property:release") $ do
     normalLog ref 2 "b:forAll:before"
 
-    values0 <- forAll
+    values0 <- forAll -- Fully Expressible
       (Gen.list (Gen.string Gen.alpha))
       (Range.constant 1 2, (Range.constant 1 2, ()))
 
