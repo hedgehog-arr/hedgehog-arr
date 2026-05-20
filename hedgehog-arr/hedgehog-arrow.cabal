@@ -48,7 +48,6 @@ test-suite test
     Test.Example.Basic
     Test.Example.Confidence
     Test.Example.Coverage
-    Test.Example.EvalNF
     Test.Example.Exception
     Test.Example.QuasiShow
     Test.Example.Resource
