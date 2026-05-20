@@ -80,7 +80,6 @@ module Hedgehog.Arrow.Gen (
 
 import Control.Applicative (Alternative (..))
 import Control.Arrow (Arrow (..), ArrowChoice (..), ArrowPlus (..), ArrowZero (..), returnA)
-import Control.Arrow.Operations (ArrowReader (readState))
 import Control.Arrow.Transformer.Reader (ReaderArrow (..))
 import Control.Category (Category (..))
 import Control.Monad ((<=<))
