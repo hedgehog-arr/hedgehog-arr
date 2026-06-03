@@ -5,8 +5,6 @@
 
 module Test.Example.Basic where
 
-import Control.Monad (guard)
-
 import qualified Data.List as List
 import qualified Data.Text as Text
 
