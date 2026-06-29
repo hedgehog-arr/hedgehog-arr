@@ -6,4 +6,4 @@ single-deriving-parens: never
 sort-constraints: true
 sort-derived-classes: true
 sort-deriving-clauses: true
-unicode: detect
+unicode: never

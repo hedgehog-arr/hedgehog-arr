@@ -16,7 +16,7 @@ import qualified Test.Example.Roundtrip
 import qualified Test.Example.STLC
 import Prelude hiding (filter, id, (.))
 
-main ∷ IO ()
+main :: IO ()
 main = do
   hSetBuffering stdout LineBuffering
   hSetBuffering stderr LineBuffering
