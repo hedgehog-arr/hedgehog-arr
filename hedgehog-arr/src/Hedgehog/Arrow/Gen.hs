@@ -163,7 +163,6 @@ instance ArrowGen f => ArrowGen (ReaderArrow a f) where
   freeze (ReaderArrow m) = ReaderArrow (freeze m)
 
 -- | Generator functions converting values of @a@ to random values of @b@.
---
 newtype Gen a b = Gen {toGen :: a -> HH.Gen b}
 
 -- Distributions:
@@ -497,7 +496,13 @@ element_ = proc xs -> do
 --
 --   /The input list must be non-empty./
 --
--- NOTE: not faithful to original
+--   /NOTE:/ not faithful to original. Each generator passed to `choice` will be
+--   executed using independent seeds, and their results will not be correlated.
+--   For example, the expression @choice [bool_, bool_]@ can change its result
+--   during shrinking since each copy of @bool_@ will produce independent
+--   values, and @choice@ can shrink from the right @bool_@ to the left one. The
+--   original version of this function does not exhibit such behaviour (i.e.,
+--   both copies of @bool_@ produce the same value.)
 choice :: ArrowGen f => [f a b] -> f a b
 choice [] = error "Hedgehog.Arrow.choice: used with empty list"
 choice ms = proc x -> do
@@ -521,7 +526,7 @@ index (m : ms) = proc ~(n, x) -> do
 --
 --   /The input list must be non-empty./
 --
--- NOTE: not faithful to original
+--   /NOTE:/ not faithful to original. See 'choice'.
 frequency :: ArrowGen f => [f a b] -> f ([Int], a) b
 frequency [] = proc _ -> returnA -< error "Hedgehog.Arrow.frequency: used with empty list"
 frequency xs0 = proc (ks, a) -> do
